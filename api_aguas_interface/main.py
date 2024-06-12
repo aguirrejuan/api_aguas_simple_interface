@@ -1,13 +1,19 @@
 import streamlit as st
 import subprocess
-import os 
+import os
 from datetime import datetime
 from pathlib import Path
-from  api_aguas_interface.backend import GenerateReport
+from api_aguas_interface.backend import GenerateReport
 import tkinter as tk
 from tkinter import filedialog
+import logging 
+from api_aguas_interface.logger_config import logger, StreamlitLogHandler  # Import the logger from the logger_config module
 
 
+# Initialize the log handler and add it to the logger
+log_handler = StreamlitLogHandler()
+log_handler.setLevel(logging.DEBUG)
+logger.addHandler(log_handler)
 
 detalles_inspeccion = {
     "nombre": f'inspección {datetime.now()}',
@@ -49,10 +55,9 @@ detalles_inspeccion = {
     "mts_por_pixel": 0.001
 }
 
-
-
 # Streamlit app
 def main():
+    logger.info("Starting the Streamlit app")
     st.title("Inspection Report Generator")
 
     st.sidebar.header("Detalles de Inspección")
@@ -94,11 +99,9 @@ def main():
     juntas_no_aprobadas = st.sidebar.number_input("Juntas No Aprobadas", value=detalles_inspeccion["juntas_no_aprobadas"], min_value=0)
     mts_por_pixel = st.sidebar.number_input("Metros por Píxel", value=detalles_inspeccion["mts_por_pixel"], min_value=0.001, step=0.001)
     
-
     username = st.text_input('Username')
     password = st.text_input("Enter a password", type="password")
     endpoint = st.text_input('Endpoint')
-
 
     # Initialize tkinter
     root = tk.Tk()
@@ -108,6 +111,7 @@ def main():
     # Function to pick a folder
     def pick_folder():
         folder_path = filedialog.askdirectory(master=root)
+        logger.debug(f"Folder picked: {folder_path}")
         return folder_path
 
     # Title of the app
@@ -175,25 +179,39 @@ def main():
             }
 
             with st.spinner("Creating inspection..."):
+                logger.info("Creating inspection with payload")
                 report_generator.create_inspection(payload=payload)
+            with st.spinner("Loading Images..."):    
+                logger.info("Loading folder with images")
                 report_generator.load_folder(folder=Path(st.session_state.folder_path))
+
+            with st.spinner("Generating report..."):
+                logger.info("Generating report")
                 report_generator.generate_report()
+            
+            with st.spinner("Downloading report..."):
                 link = report_generator.download_report()
+                logger.info(f"Report downloaded, link: {link}")
                 st.write("Link Report:", link)
         else:
             st.warning("Please select a folder first")
+            logger.warning("No folder selected when trying to generate report")
+    
+    # Display logs
+    st.subheader("Logs")
+    st.text_area("Log Output", value=log_handler.get_logs(), height=300)
 
 def launch_streamlit_app():
     app_path = os.path.realpath(__file__)
     if not os.path.isfile(app_path):
+        logger.error(f"The file '{app_path}' does not exist.")
         raise FileNotFoundError(f"The file '{app_path}' does not exist.")
 
     # Run the Streamlit app using subprocess
-    #subprocess.Popen(['streamlit', 'run', app_path])
+    # subprocess.Popen(['streamlit', 'run', app_path])
 
     os.system(f'streamlit run {app_path}')
-
-
+    logger.info("Streamlit app launched")
 
 if __name__ == "__main__":
     main()
