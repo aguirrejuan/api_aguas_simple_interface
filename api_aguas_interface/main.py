@@ -100,7 +100,7 @@ def main():
     mts_por_pixel = st.sidebar.number_input("Metros por Píxel", value=detalles_inspeccion["mts_por_pixel"], min_value=0.001, step=0.001)
     
     username = st.text_input('Username')
-    password = st.text_input("Enter a password", type="password")
+    password = st.text_input("Password", type="password")
     endpoint = st.text_input('Endpoint')
 
     # Initialize tkinter
