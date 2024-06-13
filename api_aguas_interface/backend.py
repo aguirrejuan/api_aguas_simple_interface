@@ -35,6 +35,7 @@ class GenerateReport:
         request_method = getattr(requests, method.lower())
         response = request_method(url, headers=headers, data=data, files=files)
 
+        logger.debug(f"Response: {response}")
         response_data = response.json()
         logger.debug(f"Response data: {response_data}")
         return response_data
@@ -44,6 +45,8 @@ class GenerateReport:
         self.id_inspection = data['pk']
         logger.info(f"Inspection created with ID: {self.id_inspection}")
         return data 
+
+    
 
     def load_image(self, path_image):
         file_ = get_image(path_image)
