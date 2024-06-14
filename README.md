@@ -1,7 +1,7 @@
 # Simple Interface for Aguas API
 
 ![](assets/image.png)
-
+![](assets/image2.png)
 
 ## Installation
 To install the Simple Interface for Aguas API, run the following command:
