@@ -1,5 +1,5 @@
 import streamlit as st
-import subprocess
+from streamlit_pdf_viewer import pdf_viewer
 import os
 from datetime import datetime
 from pathlib import Path
@@ -189,7 +189,15 @@ def generate_report(endpoint, username, password, inspection_details, folder_pat
         with st.spinner("Descargando reporte..."):
             link = report_generator.download_report()
             logger.info(f"Report downloaded, link: {link}")
-            st.write("Link Report:", link)
+            #st.write("Link Report:", link)
+            # Download button
+            #st.download_button(label="Descargar Reporte PDF",
+            #                 data=link, file_name=f"reporte_inspeccion-{payload['name']}.pdf")
+
+            # Display PDF
+            pdf_display = f'<iframe src="{link}" width="700" height="1000" type="application/pdf"></iframe>'
+            st.markdown(pdf_display, unsafe_allow_html=True)
+
     except Exception as e:
         logger.error(f"Error generating report: {str(e)}")
         st.error(f"Error al generar el reporte: {str(e)}")

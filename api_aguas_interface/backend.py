@@ -1,7 +1,6 @@
 from api_aguas_interface.access_handler import Access
 from api_aguas_interface.utils import get_image, get_image_paths
 import requests
-import wget
 import json 
 
 from urllib.parse import urljoin
@@ -136,7 +135,6 @@ class GenerateReport:
         try:
             data = self._request(f"report/{self.id_report}", method="GET")
             pdf_url = data['pdf_report']
-            wget.download(pdf_url)
             logger.info(f"Report downloaded from URL: {pdf_url}")
             return pdf_url
         except Exception as e:

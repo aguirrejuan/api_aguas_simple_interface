@@ -20,7 +20,6 @@ setup(
     
 
     install_requires=[ 
-                     'wget==3.2',
                      'requests==2.31.0', 
                      'streamlit==1.23.1'
     ],
